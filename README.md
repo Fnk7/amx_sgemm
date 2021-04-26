@@ -1,3 +1,6 @@
+# Apple Silicon AMX SGEMM
+Use AMX to implement sgemm (Single GEneral Matrix Mutiplication).
+
 ## benchmark
 The benchmark is ported from
 https://github.com/keichi/m1-benchmarks
@@ -17,3 +20,6 @@ This file discribe the AMX accelerator in Apple Silicon and is used for IDA pro 
 These files use the asm to access the amx instructions, and simulator is used to compare the result.
 
 Thanks for the `amx.h` and `aarch64_amx.py`, I use them to access the amx and implement `sgemm` successfully. 
+
+## src
+This fold is mainly about my code for testing amx operations and use the amx implemention of sgemm in file `amx_sgemm.h`.
