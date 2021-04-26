@@ -9,8 +9,8 @@
 #include "openblas_gemm.h"
 #elif defined(USE_ACCELERATE)
 #include "accelerate_gemm.h"
-#elif defined(USE_EIGEN)
-#include "eigen_gemm.h"
+#elif defined(USE_AMX)
+#include "amx_gemm.h"
 #elif defined(USE_METAL)
 #include "metal_gemm.h"
 #endif
@@ -65,15 +65,19 @@ int main(int argc, char *argv[])
               << std::left << std::setw(12) << "min(rt)" << std::left
               << std::setw(12) << "max(rt)" << std::endl;
 
+#if defined(USE_AMX)
+    for (size_t i = 6; i < 13; i++) {
+#else
     for (size_t i = 6; i < 14; i++) {
+#endif
         size_t n = 1 << i;
 
 #if defined(USE_OPENBLAS)
         GEMM<DTYPE> *gemm = new OpenBLASGEMM<DTYPE>(n);
 #elif defined(USE_ACCELERATE)
         GEMM<DTYPE> *gemm = new AccelerateGEMM<DTYPE>(n);
-#elif defined(USE_EIGEN)
-        GEMM<DTYPE> *gemm = new EigenGEMM<DTYPE>(n);
+#elif defined(USE_AMX)
+        GEMM<DTYPE> *gemm = new AMXGEMM<DTYPE>(n);
 #elif defined(USE_METAL)
         GEMM<DTYPE> *gemm = new MetalGEMM<DTYPE>(n);
 #endif

@@ -5,7 +5,9 @@ Use AMX to implement sgemm (Single GEneral Matrix Mutiplication).
 The benchmark is ported from
 https://github.com/keichi/m1-benchmarks
 
-It is used to test the `sgemm` (single general matrix multiplication) on m1 mac by using Accelerate Framework, OpenBLAS, Eigen (OpenMP) and Metal (the GPU on m1).
+It is used to test the `sgemm` (single general matrix multiplication) on m1 mac by using Accelerate Framework, OpenBLAS, Eigen (OpenMP) and Metal (the GPU on m1). The origin result of keichi's work is in `benchmark/old_result`, and to rebuild it, you should checkout to *Init*.
+
+I remove the Eigen sgemm and add my `amx_sgemm.h` sgemm. The result is:
 
 ![](benchmark/result/gemm.png)
 

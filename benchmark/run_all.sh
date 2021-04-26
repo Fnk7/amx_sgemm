@@ -18,12 +18,12 @@ CPATH=$(brew --prefix openblas)/include make
 ./gemm_bench > ../result/openblas.dat
 popd
 
-echo "Benchmarking with Eigen"
-mkdir -p build-eigen
-pushd build-eigen
-cmake -DDTYPE=FLOAT -DBACKEND=Eigen -DCMAKE_BUILD_TYPE=Release ..
+echo "Benchmarking with AMX"
+mkdir -p build-amx
+pushd build-amx
+cmake -DDTYPE=FLOAT -DBACKEND=AMX -DCMAKE_BUILD_TYPE=Release ..
 make
-./gemm_bench > ../result/eigen.dat
+./gemm_bench > ../result/amx.dat
 popd
 
 echo "Benchmarking with Metal"
