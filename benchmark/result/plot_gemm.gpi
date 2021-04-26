@@ -1,0 +1,16 @@
+set terminal pngcairo
+set output "gemm.png"
+
+set title "SGEMM Performance on Apple M1"
+set xlabel "N"
+set ylabel "GFLOP/s"
+set yrange [0.0:*]
+set logscale x 2
+set key top left box
+
+plot "accelerate.dat" u 1:2 w lines t "Accelerate" lc '#4e79a7' lw 2, \
+     "metal.dat" u 1:2 w lines t "Metal" lc '#f28e2c' lw 2, \
+     "openblas.dat" u 1:2 w lines t "OpenBLAS" lc '#e15759' lw 2, \
+     "eigen.dat" u 1:2 w lines t "Eigen" lc '#76b7b2' lw 2
+
+unset output
