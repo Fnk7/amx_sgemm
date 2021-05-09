@@ -4,7 +4,15 @@
 
 #include "gemm.h"
 
+#if USE_AMX == 1
+#include "../src/amx_sgemm.1.h"
+#elif USE_AMX == 2
+#include "../src/amx_sgemm.2.h"
+#elif USE_AMX == 3
+#include "../src/amx_sgemm.3.h"
+#else
 #include "../src/amx_sgemm.h"
+#endif
 
 template <class T> class AMXGEMM : public GEMM<T>
 {

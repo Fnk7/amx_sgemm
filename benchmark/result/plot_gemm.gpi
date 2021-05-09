@@ -11,6 +11,8 @@ set key top left box
 plot "accelerate.dat" u 1:2 w lines t "Accelerate" lc '#4e79a7' lw 2, \
      "metal.dat" u 1:2 w lines t "Metal" lc '#f28e2c' lw 2, \
      "openblas.dat" u 1:2 w lines t "OpenBLAS" lc '#e15759' lw 2, \
-     "amx.dat" u 1:2 w lines t "AMX" lc '#76b7b2' lw 2
+     "amx-1.dat" u 1:2 w lines t "AMX 1" lc '#769792' lw 2, \
+     "amx-2.dat" u 1:2 w lines t "AMX 2" lc '#76b7b2' lw 2, \
+     "amx-3.dat" u 1:2 w lines t "AMX 3" lc '#76d7d2' lw 2
 
 unset output

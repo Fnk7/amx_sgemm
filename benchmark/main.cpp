@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
               << std::left << std::setw(12) << "min(rt)" << std::left
               << std::setw(12) << "max(rt)" << std::endl;
 
-#if defined(USE_AMX)
+#if defined(USE_AMX) && USE_AMX <= 2
     for (size_t i = 6; i < 13; i++) {
 #else
     for (size_t i = 6; i < 14; i++) {
