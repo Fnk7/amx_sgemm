@@ -21,13 +21,25 @@
 #define MATRIX_N OMP_MATRIX_SIZE
 #define MATRIX_K OMP_MATRIX_SIZE
 #else
-#define MATRIX_M 1024ull
-#define MATRIX_N 1024ull
-#define MATRIX_K 1024ull
+#ifdef OMP_MATRIX_SIZE_M
+#define MATRIX_M OMP_MATRIX_SIZE_M
+#else
+#define MATRIX_M 512
+#endif
+#ifdef OMP_MATRIX_SIZE_N
+#define MATRIX_N OMP_MATRIX_SIZE_N
+#else
+#define MATRIX_N 512
+#endif
+#ifdef OMP_MATRIX_SIZE_K
+#define MATRIX_K OMP_MATRIX_SIZE_K
+#else
+#define MATRIX_K 512
+#endif
 #endif
 
 #ifdef OMP_OPENBLAS
-#define MAX_FLOAT_DIFF 0.00050f
+#define MAX_FLOAT_DIFF 0.00500f
 #else
 #define MAX_FLOAT_DIFF 0.00000f
 #endif
@@ -36,6 +48,10 @@
 #define OMP_THREAD_NUM 8
 #elif OMP_THREAD_NUM > 8
 #error "OMP_THREAD_NUM must lower or equal than 8!"
+#endif
+
+#ifndef OMP_SGEMM_REPETITION
+#define OMP_SGEMM_REPETITION 1
 #endif
 
 __attribute__((aligned(0x80))) float MatrixA[8][MATRIX_M][MATRIX_K];
@@ -71,6 +87,9 @@ void initMatrixAB()
 
 int main()
 {
+    printf("Running with settings: repetition %d, omp thread num %d, M %d, K %d, N %d\n\n",
+           OMP_SGEMM_REPETITION, OMP_THREAD_NUM, MATRIX_M, MATRIX_K, MATRIX_N);
+
     omp_set_num_threads(OMP_THREAD_NUM);
     struct timeval start, end;
     gettimeofday(&start, NULL);
@@ -81,7 +100,7 @@ int main()
 
 #pragma omp parallel
     {
-        // library blas 
+        // library blas
         // accelerate using amx (or amx and neon?)
         // openblas using neon
 #pragma omp for
@@ -107,12 +126,13 @@ int main()
             struct timeval omp_time;
             gettimeofday(&omp_time, NULL);
             printf(">>> start: %d %d %ld\n", omp_get_thread_num(), i, (omp_time.tv_sec - base_time) * 1000000 + omp_time.tv_usec);
-            cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                        MATRIX_M, MATRIX_N, MATRIX_K, 1.0,
-                        &MatrixA[i][0][0], MATRIX_K,
-                        &MatrixB[i][0][0], MATRIX_N,
-                        0.0,
-                        &McblasC[i][0][0], MATRIX_N);
+            for (int j = 0; j < OMP_SGEMM_REPETITION; j++)
+                cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                            MATRIX_M, MATRIX_N, MATRIX_K, 1.0,
+                            &MatrixA[i][0][0], MATRIX_K,
+                            &MatrixB[i][0][0], MATRIX_N,
+                            0.0,
+                            &McblasC[i][0][0], MATRIX_N);
             gettimeofday(&omp_time, NULL);
             printf(">>>   end: %d %d %ld\n", omp_get_thread_num(), i, (omp_time.tv_sec - base_time) * 1000000 + omp_time.tv_usec);
         }
@@ -144,10 +164,11 @@ int main()
             struct timeval omp_time;
             gettimeofday(&omp_time, NULL);
             printf(">>> start: %d %d %ld\n", omp_get_thread_num(), i, (omp_time.tv_sec - base_time) * 1000000 + omp_time.tv_usec);
-            _amx_sgemm(&MatrixA[i][0][0],
-                       &MatrixB[i][0][0],
-                       &MatrixC[i][0][0],
-                       MATRIX_M, MATRIX_N, MATRIX_K);
+            for (int j = 0; j < OMP_SGEMM_REPETITION; j++)
+                _amx_sgemm(&MatrixA[i][0][0],
+                           &MatrixB[i][0][0],
+                           &MatrixC[i][0][0],
+                           MATRIX_M, MATRIX_N, MATRIX_K);
             gettimeofday(&omp_time, NULL);
             printf(">>>   end: %d %d %ld\n", omp_get_thread_num(), i, (omp_time.tv_sec - base_time) * 1000000 + omp_time.tv_usec);
         }
